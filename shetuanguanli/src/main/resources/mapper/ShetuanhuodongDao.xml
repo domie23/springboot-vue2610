@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.dao.ShetuanhuodongDao">
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        a.id as id
+        ,a.shetuan_id as shetuanId
+        ,a.shetuanhuodong_name as shetuanhuodongName
+        ,a.shetuanhuodong_photo as shetuanhuodongPhoto
+        ,a.shetuanhuodong_types as shetuanhuodongTypes
+        ,a.shetuanhuodong_zuida as shetuanhuodongZuida
+        ,a.shetuanhuodong_content as shetuanhuodongContent
+        ,a.shetuanhuodong_delete as shetuanhuodongDelete
+        ,a.create_time as createTime
+    </sql>
+    <select id="selectListView" parameterType="map" resultType="com.entity.view.ShetuanhuodongView" >
+        SELECT
+        <include refid="Base_Column_List" />
+
+--         级联表的字段
+        ,shetuan.tuanzhang_id as shetuanTuanzhangId
+        ,shetuan.shetuan_name as shetuanName
+        ,shetuan.shetuan_photo as shetuanPhoto
+        ,shetuan.shetuan_types as shetuanTypes
+        ,shetuan.shetuan_renshu as shetuanRenshu
+        ,shetuan.shetuan_clicknum as shetuanClicknum
+        ,shetuan.shetuan_content as shetuanContent
+        ,shetuan.shetuan_delete as shetuanDelete
+
+        FROM shetuanhuodong  a
+        left JOIN shetuan shetuan ON a.shetuan_id = shetuan.id
+
+        <where>
+            <if test="params.ids != null">
+                and a.id in
+                <foreach item="item" index="index" collection="params.ids" open="(" separator="," close=")">
+                #{item}
+                </foreach>
+            </if>
+            <if test="params.shetuanId != null and params.shetuanId != ''">
+                and (
+                    a.shetuan_id = #{params.shetuanId}
+                )
+            </if>
+            <if test=" params.shetuanhuodongName != '' and params.shetuanhuodongName != null and params.shetuanhuodongName != 'null' ">
+                and a.shetuanhuodong_name like CONCAT('%',#{params.shetuanhuodongName},'%')
+            </if>
+            <if test="params.shetuanhuodongTypes != null and params.shetuanhuodongTypes != ''">
+                and a.shetuanhuodong_types = #{params.shetuanhuodongTypes}
+            </if>
+            <if test="params.shetuanhuodongZuidaStart != null and params.shetuanhuodongZuidaStart != ''">
+                <![CDATA[  and a.shetuanhuodong_zuida >= #{params.shetuanhuodongZuidaStart}   ]]>
+            </if>
+            <if test="params.shetuanhuodongZuidaEnd != null and params.shetuanhuodongZuidaEnd != ''">
+                <![CDATA[  and a.shetuanhuodong_zuida <= #{params.shetuanhuodongZuidaEnd}   ]]>
+            </if>
+             <if test="params.shetuanhuodongZuida != null and params.shetuanhuodongZuida != ''">
+                and a.shetuanhuodong_zuida = #{params.shetuanhuodongZuida}
+             </if>
+            <if test=" params.shetuanhuodongContent != '' and params.shetuanhuodongContent != null and params.shetuanhuodongContent != 'null' ">
+                and a.shetuanhuodong_content like CONCAT('%',#{params.shetuanhuodongContent},'%')
+            </if>
+            <if test="params.shetuanhuodongDeleteStart != null and params.shetuanhuodongDeleteStart != ''">
+                <![CDATA[  and a.shetuanhuodong_delete >= #{params.shetuanhuodongDeleteStart}   ]]>
+            </if>
+            <if test="params.shetuanhuodongDeleteEnd != null and params.shetuanhuodongDeleteEnd != ''">
+                <![CDATA[  and a.shetuanhuodong_delete <= #{params.shetuanhuodongDeleteEnd}   ]]>
+            </if>
+             <if test="params.shetuanhuodongDelete != null and params.shetuanhuodongDelete != ''">
+                and a.shetuanhuodong_delete = #{params.shetuanhuodongDelete}
+             </if>
+
+                <!-- 判断社团的id不为空 -->
+            <if test=" params.shetuanIdNotNull != '' and params.shetuanIdNotNull != null and params.shetuanIdNotNull != 'null' ">
+                and a.shetuan_id IS NOT NULL
+            </if>
+            <if test="params.tuanzhangId != null  and params.tuanzhangId != ''">
+                and shetuan.tuanzhang_id = #{params.tuanzhangId}
+            </if>
+            <if test=" params.shetuanName != '' and params.shetuanName != null and params.shetuanName != 'null' ">
+                and shetuan.shetuan_name like CONCAT('%',#{params.shetuanName},'%')
+            </if>
+            <if test="params.shetuanTypes != null  and params.shetuanTypes != ''">
+                and shetuan.shetuan_types = #{params.shetuanTypes}
+            </if>
+
+            <if test="params.shetuanRenshuStart != null  and params.shetuanRenshuStart != '' ">
+                <![CDATA[  and shetuan.shetuan_renshu >= #{params.shetuanRenshuStart}   ]]>
+            </if>
+            <if test="params.shetuanRenshuEnd != null  and params.shetuanRenshuEnd != '' ">
+                <![CDATA[  and shetuan.shetuan_renshu <= #{params.shetuanRenshuEnd}   ]]>
+            </if>
+            <if test="params.shetuanRenshu != null  and params.shetuanRenshu != '' ">
+                and shetuan.shetuan_renshu = #{params.shetuanRenshu}
+            </if>
+            <if test="params.shetuanClicknumStart != null  and params.shetuanClicknumStart != '' ">
+                <![CDATA[  and shetuan.shetuan_clicknum >= #{params.shetuanClicknumStart}   ]]>
+            </if>
+            <if test="params.shetuanClicknumEnd != null  and params.shetuanClicknumEnd != '' ">
+                <![CDATA[  and shetuan.shetuan_clicknum <= #{params.shetuanClicknumEnd}   ]]>
+            </if>
+            <if test="params.shetuanClicknum != null  and params.shetuanClicknum != '' ">
+                and shetuan.shetuan_clicknum = #{params.shetuanClicknum}
+            </if>
+            <if test=" params.shetuanContent != '' and params.shetuanContent != null and params.shetuanContent != 'null' ">
+                and shetuan.shetuan_content like CONCAT('%',#{params.shetuanContent},'%')
+            </if>
+            <if test="params.shetuanDeleteStart != null  and params.shetuanDeleteStart != '' ">
+                <![CDATA[  and shetuan.shetuan_delete >= #{params.shetuanDeleteStart}   ]]>
+            </if>
+            <if test="params.shetuanDeleteEnd != null  and params.shetuanDeleteEnd != '' ">
+                <![CDATA[  and shetuan.shetuan_delete <= #{params.shetuanDeleteEnd}   ]]>
+            </if>
+            <if test="params.shetuanDelete != null  and params.shetuanDelete != '' ">
+                and shetuan.shetuan_delete = #{params.shetuanDelete}
+            </if>
+        </where>
+
+        order by a.${params.orderBy} desc 
+    </select>
+
+</mapper>
